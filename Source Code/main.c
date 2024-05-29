@@ -1,79 +1,98 @@
 #include <stdio.h>
-#include <limits.h>
+#include <stdlib.h>
+#include <climits>
+#include <cstring>
+#define MAX_BOOKS 100 // Maximum books in the array
 
-#define MAX_BOOKS 100 //Maxmimum number of books in the array
+void printEmployeeBooks(int books[], int allocation[], int numBooks, const char* employeeName) {
+    printf("%s: ", employeeName);
+    int first = 1;
+    for (int i = 0; i < numBooks; i++) {
+        if (allocation[i]) {
+            if (!first) {
+                printf(", ");
+            }
+            printf("Book %d (%d pages)", i + 1, books[i]);
+            first = 0;
+        }
+    }
+    printf("\n");
+}
 
-void findOptimalDivision(int books[], int n, int *minMaxLoad, int divisions[]) {
+void printDistribution(int books[], int numBooks, int allocationEmp1[], int allocationEmp2[], int allocationEmp3[]) {
+    printf("Distribution of books:\n");
+    printEmployeeBooks(books, allocationEmp1, numBooks, "Employee 1");
+    printEmployeeBooks(books, allocationEmp2, numBooks, "Employee 2");
+    printEmployeeBooks(books, allocationEmp3, numBooks, "Employee 3");
+}
+
+void findBestDistribution(int books[], int numBooks) {
     int totalSum = 0;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < numBooks; i++)
         totalSum += books[i];
+
+    int bestMaxDiff = INT_MAX;  // Initialize with the largest possible integer to ensure any first found value is smaller.
+    int bestAllocationEmp1[MAX_BOOKS] = { 0 }, bestAllocationEmp2[MAX_BOOKS] = { 0 }, bestAllocationEmp3[MAX_BOOKS] = { 0 };
+
+    // Start bitmask from 1 to ensure at least one book is assigned to each employee
+    for (int mask1 = 1; mask1 < (1 << numBooks); mask1++) {
+        for (int mask2 = 1; mask2 < (1 << numBooks); mask2++) {
+            // Ensure each mask is unique and they cover all books
+            int mask3 = ((1 << numBooks) - 1) & ~(mask1 | mask2);
+            if (!mask3 || (mask1 & mask2) || (mask1 & mask3) || (mask2 & mask3))
+                continue; // Skip invalid or overlapping combinations.
+
+            int allocationEmp1[MAX_BOOKS] = { 0 }, allocationEmp2[MAX_BOOKS] = { 0 }, allocationEmp3[MAX_BOOKS] = { 0 };
+            int pagesEmp1 = 0, pagesEmp2 = 0, pagesEmp3 = 0;
+
+            for (int book = 0; book < numBooks; book++) {
+                if (mask1 & (1 << book)) {
+                    pagesEmp1 += books[book];
+                    allocationEmp1[book] = 1;
+                }
+                if (mask2 & (1 << book)) {
+                    pagesEmp2 += books[book];
+                    allocationEmp2[book] = 1;
+                }
+                if (mask3 & (1 << book)) {
+                    pagesEmp3 += books[book];
+                    allocationEmp3[book] = 1;
+                }
+            }
+
+            int maxPages = pagesEmp1 > pagesEmp2 ? (pagesEmp1 > pagesEmp3 ? pagesEmp1 : pagesEmp3) : (pagesEmp2 > pagesEmp3 ? pagesEmp2 : pagesEmp3);
+
+            if (maxPages < bestMaxDiff) {
+                bestMaxDiff = maxPages;
+                for (int l = 0; l < numBooks; l++) {
+                    bestAllocationEmp1[l] = allocationEmp1[l];
+                    bestAllocationEmp2[l] = allocationEmp2[l];
+                    bestAllocationEmp3[l] = allocationEmp3[l];
+                }
+            }
+        }
     }
 
-    int leftSum, midSum, rightSum, maxLoad;
-    *minMaxLoad = INT_MAX;
-
-    // Iterate over all possible divisions
-    for (int i = 0; i < n; i++) {
-        leftSum = 0;
-        for (int j = 0; j <= i; j++) {
-            leftSum += books[j];
-        }
-        for (int k = i+1; k < n-1; k++) {
-            midSum = 0;
-            for (int l = i+1; l <= k; l++) {
-                midSum += books[l];
-            }
-            rightSum = totalSum - leftSum - midSum;
-
-            maxLoad = 0;
-            if (leftSum > midSum) {
-              if (leftSum > rightSum)
-                maxLoad = leftSum;
-              else
-                maxLoad = rightSum;
-            } else {
-              if (midSum > rightSum)
-                maxLoad = midSum;
-              else
-                midSum = rightSum;
-            }
-
-            if (maxLoad < *minMaxLoad) {
-                *minMaxLoad = maxLoad;
-                divisions[0] = i;
-                divisions[1] = k;
-            }
-        }
-    }
+    printDistribution(books, numBooks, bestAllocationEmp1, bestAllocationEmp2, bestAllocationEmp3);
 }
 
 int main() {
-    int books[MAX_BOOKS];
-    int n;
+    int numBooks;
+    printf("Enter number of books (up to 100): ");
+    scanf("%d", &numBooks);
 
-    printf("Enter the number of books: ");
-    scanf("%d", &n);
-
-    if (n < 3) {
-        printf("There must be at least 3 books to divide among 3 employees.\n");
-        return 1;
+    if (numBooks <= 0 || numBooks > MAX_BOOKS || numBooks < 3) {
+        printf("Invalid number of books, exiting program...\n");
+        return 0;
     }
 
-    printf("Enter the sizes of the books: \n");
-    for (int i = 0; i < n; i++) {
+    int books[MAX_BOOKS];
+    printf("Enter number of pages in each book:\n");
+    for (int i = 0; i < numBooks; i++) {
+        printf("Book %d: ", i + 1);
         scanf("%d", &books[i]);
     }
 
-    int minMaxLoad;
-    int divisions[2];
-    findOptimalDivision(books, n, &minMaxLoad, divisions);
-
-    printf("Optimal division points are at indexes: %d and %d\n", divisions[0], divisions[1]);
-    printf("The minimum possible maximum load is: %d\n", minMaxLoad);
-
-    printf("Employee 1 will handle books from 0 to %d\n", divisions[0]);
-    printf("Employee 2 will handle books from %d to %d\n", divisions[0] + 1, divisions[1]);
-    printf("Employee 3 will handle books from %d to %d\n", divisions[1] + 1, n - 1);
-
+    findBestDistribution(books, numBooks);
     return 0;
 }
