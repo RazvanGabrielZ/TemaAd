@@ -8,6 +8,7 @@ This project demonstrates an algorithm to partition a shelf of books among three
 
 - `main.c`: Contains the main function and initiates the partitioning process.
 - `README.md`: Provides instructions for compiling and running the code.
+- `TESTDATASET.c`: Contains the main function and the automatic generated books.
 
 ## Compilation Instructions
 
