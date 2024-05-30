@@ -8,7 +8,7 @@ This project demonstrates an algorithm to partition a shelf of books among three
 
 - `main.c`: Contains the main function and it takes user input for the amount of books and pages for each book, which runs the algorithm on the respective dataset and returns the results.
 - `README.md`: Provides instructions for compiling and running the code.
-- `TESTDATASET.c`: Contains the main function (needs to be compiled separately to `main.c`), which automatically creates a dataset of 10 books, with a random number of pages between $10^3$ and $10^8$; also prints the execution time of the algorithm.
+- `TESTDATASET.c`: Contains the main function (needs to be compiled separately to `main.c`), which automatically creates a dataset of 10 books, with a random number of pages between $10^3$ and $10^8$ ; also prints the execution time of the algorithm.
 
 ## Compilation Instructions
 
