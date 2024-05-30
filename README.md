@@ -26,7 +26,7 @@ This will generate an executable file named `TemaAd.exe`.
 After compiling the code, run the executable with the following command:
 `TemaAd.exe`
 
-The program will print the partitioning of books for the example datasets included in the `main.c` file. You can modify `main.c` to include additional datasets as needed.
+This program will take user input for the amount of books and number of pages for each book to create a dataset, then it will run the algorithm on the respective dataset and will return the results for it.
 
 ## Code Quality
 
