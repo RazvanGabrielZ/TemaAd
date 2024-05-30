@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <climits>
-#include <cstring>
-#define MAX_BOOKS 100 // Maximum books in the array
+#include <limits.h>
+#include <string.h>
+#define MAX_BOOKS 100
 
 void printEmployeeBooks(int books[], int allocation[], int numBooks, const char* employeeName) {
     printf("%s: ", employeeName);
@@ -20,7 +20,7 @@ void printEmployeeBooks(int books[], int allocation[], int numBooks, const char*
 }
 
 void printDistribution(int books[], int numBooks, int allocationEmp1[], int allocationEmp2[], int allocationEmp3[]) {
-    printf("Distribution of books:\n");
+    printf("\nDistribution of books:\n");
     printEmployeeBooks(books, allocationEmp1, numBooks, "Employee 1");
     printEmployeeBooks(books, allocationEmp2, numBooks, "Employee 2");
     printEmployeeBooks(books, allocationEmp3, numBooks, "Employee 3");
@@ -82,7 +82,9 @@ int main() {
     scanf("%d", &numBooks);
 
     if (numBooks <= 0 || numBooks > MAX_BOOKS || numBooks < 3) {
-        printf("Invalid number of books, exiting program...\n");
+        printf("Invalid number of books, press any key to exit...\n");
+        fflush(stdin);
+        getchar();
         return 0;
     }
 
@@ -94,5 +96,9 @@ int main() {
     }
 
     findBestDistribution(books, numBooks);
+
+    printf("\nPress any key to exit...");
+    fflush(stdin);
+    getchar();
     return 0;
 }
